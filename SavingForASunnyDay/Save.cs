@@ -20,20 +20,20 @@ namespace SavingForASunnyDay
         static string _savingsAccount = ""; //...to this account
 
         //«Weather forecast from Yr, delivered by the Norwegian Meteorological Institute and NRK» 
-        static int postalcode = 5097; //This version uses zip code to define location for forecast. Can easily be rewritten to use place or long./lat. See http://om.yr.no/verdata/xml/.  
-        static int amountToSavePrMm = 3; //How many NOK to save for each mm rainfall
+        static int postalcode = 5097; //This version uses zip code to find your location. Can easily be rewritten to use place or long./lat. See http://om.yr.no/verdata/xml/.  
+        static int amountToSavePerMm = 3; //How much NOK to save for each mm rainfall
 
         [FunctionName("Rainsaver")]
         public static async void Run([TimerTrigger("0 0 6 * * *")]TimerInfo myTimer, TraceWriter log)
         {
-            XmlDocument weatherData = await getWhetherData();
+            XmlDocument weatherData = await getWeatherData();
             double precipitation = GetPercipitation(weatherData);
-            int amountToSave = CalculateSaving(precipitation, amountToSavePrMm);
+            int amountToSave = CalculateSaving(precipitation, amountToSavePerMm);
             await TransferToSavingsAccount(log, precipitation, amountToSave);
          
         }
 
-        private static async System.Threading.Tasks.Task<XmlDocument> getWhetherData()
+        private static async System.Threading.Tasks.Task<XmlDocument> getWeatherData()
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
